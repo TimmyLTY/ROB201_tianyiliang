@@ -1,6 +1,5 @@
 """
-Robot controller definition
-Complete controller including SLAM, planning, path following
+Robot controller definition.
 """
 import numpy as np
 
@@ -15,23 +14,18 @@ from occupancy_grid import OccupancyGrid
 from planner import Planner
 
 
-# Definition of our robot controller
 class MyRobotSlam(RobotAbstract):
     """A robot controller including SLAM, path planning and path following"""
 
     def __init__(self,
                  lidar_params: LidarParams = LidarParams(),
                  odometer_params: OdometerParams = OdometerParams()):
-        # Passing parameter to parent class
         super().__init__(lidar_params=lidar_params,
                          odometer_params=odometer_params)
 
-        # step counter to deal with init and display
         self.counter = 0
 
-        # Init SLAM object
-        # Here we cheat to get an occupancy grid size that's not too large, by using the
-        # robot's starting position and the maximum map size that we shouldn't know.
+        # Map limits for the selected world, expressed in the odometry frame.
         size_area = (1400, 1000)
         robot_position = (439.0, 195)
         self.occupancy_grid = OccupancyGrid(x_min=-(size_area[0] / 2 + robot_position[0]),
@@ -43,7 +37,6 @@ class MyRobotSlam(RobotAbstract):
         self.tiny_slam = TinySlam(self.occupancy_grid)
         self.planner = Planner(self.occupancy_grid)
 
-        # storage for pose after localization
         self.corrected_pose = np.array([0, 0, 0])
 
         # TP2: manually designed path through the map corridors
@@ -88,9 +81,8 @@ class MyRobotSlam(RobotAbstract):
     def control_tp1(self):
         """
         Control function for TP1
-        Control funtion with minimal random motion
+        Control function with minimal random motion
         """
-        
         self.tiny_slam.compute()
 
         # Compute new command speed to perform obstacle avoidance
@@ -110,18 +102,14 @@ class MyRobotSlam(RobotAbstract):
             d_to_goal = np.linalg.norm(pose[:2] - goal[:2])
 
             if d_to_goal < self.goal_reached_threshold:
-                # Move to next goal
                 self.current_goal_index += 1
                 if self.current_goal_index < len(self.goals):
                     goal = self.goals[self.current_goal_index]
                 else:
-                    # All goals reached, stop
                     return {"forward": 0, "rotation": 0}
         else:
-            # All goals reached
             return {"forward": 0, "rotation": 0}
 
-        # Compute new command speed using potential field control
         command = potential_field_control(self.lidar(), pose, goal)
 
         if self.counter % self.display_period == 0:

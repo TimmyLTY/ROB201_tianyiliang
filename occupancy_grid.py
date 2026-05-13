@@ -1,6 +1,5 @@
 """
-Occupancy grid class
-Includes initialisation, raytracing, display...
+Occupancy grid class.
 """
 
 import pickle
@@ -13,7 +12,7 @@ VIDEO_OUT = False
 
 
 class OccupancyGrid:
-    """Simple occupancy grid"""
+    """Occupancy grid."""
 
     def __init__(self, x_min, x_max, y_min, y_max, resolution):
         # Given : constructor
@@ -146,7 +145,7 @@ class OccupancyGrid:
         plt.axis("equal")
 
         if traj is not None:
-            plt.plot(traj[0, :], traj[1, :], 2, 'w')
+            plt.plot(traj[0, :], traj[1, :], color='w', linewidth=2)
 
         if goals is not None:
             goals_array = np.array(goals)
@@ -179,7 +178,9 @@ class OccupancyGrid:
 
         img = cv2.flip(self.occupancy_map.T, 0)
         img = img - img.min()
-        img = img / img.max() * 255
+        img_max = img.max()
+        if img_max > 0:
+            img = img / img_max * 255
         img = np.uint8(img)
         img_color = cv2.applyColorMap(src=img, colormap=cv2.COLORMAP_JET)
 
@@ -256,4 +257,13 @@ class OccupancyGrid:
         Load map from pickle object
         filename : base name (without extension) of file on disk
         """
-        # TODO
+        with open(filename + ".p", "rb") as fid:
+            data = pickle.load(fid)
+
+        self.occupancy_map = data['occupancy_map']
+        self.resolution = data['resolution']
+        self.x_min_world = data['x_min_world']
+        self.x_max_world = data['x_max_world']
+        self.y_min_world = data['y_min_world']
+        self.y_max_world = data['y_max_world']
+        self.x_max_map, self.y_max_map = self.occupancy_map.shape

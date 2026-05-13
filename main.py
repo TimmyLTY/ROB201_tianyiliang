@@ -1,4 +1,4 @@
-""" A simple SLAM demonstration using the "placebot" robot simulator """
+"""SLAM demonstration using the "placebot" robot simulator."""
 
 from place_bot.simulation.ray_sensors.lidar import LidarParams
 from place_bot.simulation.robot.odometer import OdometerParams

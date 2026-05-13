@@ -27,7 +27,7 @@ from occupancy_grid import OccupancyGrid
 
 
 class Planner:
-    """Simple occupancy grid Planner"""
+    """Occupancy-grid planner."""
 
     def __init__(self, occupancy_grid: OccupancyGrid):
         self.grid = occupancy_grid

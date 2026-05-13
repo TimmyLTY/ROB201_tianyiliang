@@ -1,12 +1,11 @@
-""" A simple robotics navigation code including SLAM, exploration, planning"""
+"""Occupancy-grid SLAM utilities."""
 
-import cv2
 import numpy as np
 from occupancy_grid import OccupancyGrid
 
 
 class TinySlam:
-    """Simple occupancy grid SLAM"""
+    """Occupancy grid SLAM."""
 
     def __init__(self, occupancy_grid: OccupancyGrid):
         self.grid = occupancy_grid
@@ -187,7 +186,7 @@ class TinySlam:
         if ranges.size == 0:
             return
 
-        # Simple inverse sensor model tuned for TP3 occupancy mapping.
+        # Inverse sensor model tuned for TP3 occupancy mapping.
         free_update = -0.25
         occupied_update = 0.9
         neutral_band = 10.0
@@ -213,15 +212,14 @@ class TinySlam:
         np.clip(self.grid.occupancy_map, map_min, map_max, out=self.grid.occupancy_map)
 
     def compute(self):
-        """ Useless function, just for the exercise on using the profiler """
-        # Remove after TP1
-
+        """Small polar-to-cartesian conversion example used in TP1."""
         ranges = np.random.rand(3600)
         ray_angles = np.arange(-np.pi, np.pi, np.pi / 1800)
 
-        # Poor implementation of polar to cartesian conversion
         points = []
         for i in range(3600):
             pt_x = ranges[i] * np.cos(ray_angles[i])
             pt_y = ranges[i] * np.sin(ray_angles[i])
             points.append([pt_x, pt_y])
+
+        return np.array(points).T
